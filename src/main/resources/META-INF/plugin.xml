@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.wass3r.intellijvelaplugin</id>
-    <name>intellij-vela-plugin</name>
+    <name>Vela</name>
     <vendor>wass3r</vendor>
 
     <depends>com.intellij.modules.platform</depends>
