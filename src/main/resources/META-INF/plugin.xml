@@ -9,10 +9,25 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.wass3r.intellijvelaplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="com.github.wass3r.intellijvelaplugin.toolWindow.VelaToolWindowFactory"
+                   id="Vela"
+                   anchor="bottom"
+                   secondary="false"/>
+        
+        <!-- Add Vela Settings -->
+        <applicationService serviceImplementation="com.github.wass3r.intellijvelaplugin.settings.VelaSettings"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.github.wass3r.intellijvelaplugin.settings.VelaSettingsConfigurable"
+                id="com.github.wass3r.intellijvelaplugin.settings.VelaSettingsConfigurable"
+                displayName="Vela"/>
+
+        <!-- Add Notification Group -->
+        <notificationGroup id="Vela Plugin Notifications" displayType="BALLOON"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="com.github.wass3r.intellijvelaplugin.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-    </applicationListeners>
+    <projectListeners>
+        <listener class="com.github.wass3r.intellijvelaplugin.listeners.VelaProjectListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </projectListeners>
 </idea-plugin>
