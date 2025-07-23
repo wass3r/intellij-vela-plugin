@@ -1,12 +1,12 @@
 package com.github.wass3r.intellijvelaplugin.utils
 
 object VelaEvent {
-    private const val PUSH = "push"
+    const val PUSH = "push"
     const val PULL_REQUEST = "pull_request"
     const val DEPLOYMENT = "deployment"
     const val COMMENT = "comment"
-    private const val SCHEDULE = "schedule"
-    private const val TAG = "tag"
+    const val SCHEDULE = "schedule"
+    const val TAG = "tag"
     const val DELETE = "delete"
 
     val ALL = listOf(PUSH, PULL_REQUEST, DEPLOYMENT, COMMENT, SCHEDULE, TAG, DELETE)

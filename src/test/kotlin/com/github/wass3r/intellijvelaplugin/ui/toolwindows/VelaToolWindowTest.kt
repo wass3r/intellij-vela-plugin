@@ -9,7 +9,7 @@ import com.github.wass3r.intellijvelaplugin.ui.toolwindows.VelaToolWindowFactory
  * Tests for VelaToolWindow functionality following IntelliJ Platform testing best practices.
  * Uses BasePlatformTestCase for tool window testing with real project context.
  */
-class VelaToolWindowProperTest : BasePlatformTestCase() {
+class VelaToolWindowTest : BasePlatformTestCase() {
     
     private lateinit var toolWindowFactory: VelaToolWindowFactory
     

@@ -8,7 +8,7 @@ import java.io.File
  * Tests for VelaCliService following IntelliJ Platform testing best practices.
  * Uses JUnit 3 style naming convention (testMethodName) with TestCase inheritance.
  */
-class VelaCliServiceProperTest : LightPlatformTestCase() {
+class VelaCliServiceTest : LightPlatformTestCase() {
     
     private lateinit var velaService: VelaCliService
     

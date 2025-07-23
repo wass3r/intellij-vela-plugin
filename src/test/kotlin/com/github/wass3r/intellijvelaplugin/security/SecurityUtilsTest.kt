@@ -7,7 +7,7 @@ import com.intellij.testFramework.LightPlatformTestCase
  * Tests for SecurityUtils following IntelliJ Platform testing best practices.
  * Uses JUnit 3 style naming convention (testMethodName) with TestCase inheritance.
  */
-class SecurityUtilsProperTest : LightPlatformTestCase() {
+class SecurityUtilsTest : LightPlatformTestCase() {
     
     fun testValidCommandArguments() {
         val validArgs = listOf("build", "main", "abc123")

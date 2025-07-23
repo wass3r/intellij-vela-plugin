@@ -7,7 +7,7 @@ import com.intellij.testFramework.LightPlatformTestCase
  * Tests for VelaSettings following IntelliJ Platform testing best practices.
  * Uses JUnit 3 style naming convention (testMethodName) with TestCase inheritance.
  */
-class VelaSettingsProperTest : LightPlatformTestCase() {
+class VelaSettingsTest : LightPlatformTestCase() {
     
     private lateinit var settings: VelaSettings
     
