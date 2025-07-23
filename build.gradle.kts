@@ -86,6 +86,7 @@ dependencies {
         // The official template (with 2.5.0) does NOT include this, but we need it
         // for compatibility with our stable version configuration
         instrumentationTools()
+        pluginVerifier()
         testFramework(TestFrameworkType.Platform)
     }
 }
