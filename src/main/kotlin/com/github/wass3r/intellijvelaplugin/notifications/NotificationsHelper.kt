@@ -4,9 +4,15 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 
+/**
+ * Helper for displaying notifications in the IDE.
+ */
 object NotificationsHelper {
-    private const val GROUP_ID = "Vela Plugin Notifications"
+    private const val GROUP_ID = "Vela Notifications"
 
+    /**
+     * Shows an error notification.
+     */
     fun notifyError(project: Project?, title: String, content: String) {
         NotificationGroupManager.getInstance()
             .getNotificationGroup(GROUP_ID)
@@ -14,10 +20,14 @@ object NotificationsHelper {
             .notify(project)
     }
 
-    fun notifyInfo(project: Project?, title: String, content: String) {
+    /**
+     * Shows a success notification.
+     */
+    fun notifySuccess(project: Project?, title: String, content: String) {
         NotificationGroupManager.getInstance()
             .getNotificationGroup(GROUP_ID)
             .createNotification(title, content, NotificationType.INFORMATION)
+            .setImportant(false)
             .notify(project)
     }
 }
