@@ -101,6 +101,9 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+
     steps:
       # Check out the current repository
       - name: Fetch Sources
@@ -133,6 +136,7 @@ jobs:
       - name: Upload Code Coverage Report
         uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
         with:
+          use_oidc: true
           files: ${{ github.workspace }}/build/reports/kover/report.xml
 
   # Run Qodana inspections and provide report
