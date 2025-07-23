@@ -243,13 +243,11 @@ class PipelineTreePanel(private val pipelineService: PipelineService) : JPanel(B
             revalidate()
             repaint()
 
-            // Notify parent containers that our preferred size may have changed
+            // Notify parent containers that our preferred size may have changed efficiently
             invalidate()
-            var parent = getParent()
-            while (parent != null) {
-                parent.revalidate()
-                parent = parent.parent
-            }
+            val topLevelContainer = SwingUtilities.getAncestorOfClass(JPanel::class.java, this)
+            topLevelContainer?.revalidate()
+            topLevelContainer?.repaint()
         }
     }
 

@@ -36,10 +36,8 @@ object SecurityUtils {
             throw SecurityException("Command argument contains dangerous characters: $input")
         }
 
-        // Escape quotes and backslashes
-        return input.replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("'", "\\'")
+        // Return the input as-is after validation (ProcessBuilder handles escaping)
+        return input
     }
 
     /**

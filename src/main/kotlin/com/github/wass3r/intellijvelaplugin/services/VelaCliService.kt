@@ -327,18 +327,16 @@ class VelaCliService(private val project: Project) {
         // Set process timeout for security (180 minutes max)
         handler.addProcessListener(object : com.intellij.execution.process.ProcessAdapter() {
             override fun startNotified(event: com.intellij.execution.process.ProcessEvent) {
-                // Schedule termination after timeout
-                ApplicationManager.getApplication().executeOnPooledThread {
-                    try {
-                        Thread.sleep(TimeUnit.MINUTES.toMillis(180))
-                        if (!handler.isProcessTerminated) {
-                            log.warn("Process exceeded timeout limit, terminating")
-                            handler.destroyProcess()
-                        }
-                    } catch (e: InterruptedException) {
-                        // Thread was interrupted, ignore
+                // Schedule termination after timeout using ScheduledExecutorService
+                val scheduler = java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
+                val timeoutTask = Runnable {
+                    if (!handler.isProcessTerminated) {
+                        log.warn("Process exceeded timeout limit, terminating")
+                        handler.destroyProcess()
                     }
+                    scheduler.shutdown()
                 }
+                scheduler.schedule(timeoutTask, 180, TimeUnit.MINUTES)
             }
         })
 

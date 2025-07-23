@@ -222,45 +222,42 @@ class EnvironmentVariablesDialog(
      * DocumentFilter to restrict environment variable keys to valid format and prevent injection.
      */
     private class KeyInputFilter : DocumentFilter() {
+        private var validationTimer: javax.swing.Timer? = null
+
         override fun insertString(fb: FilterBypass, off: Int, text: String?, attr: AttributeSet?) {
             text ?: return
-            try {
-                val filtered = text.filter { it == '_' || it.isLetterOrDigit() }
-                    .map { if (it.isLetter()) it.uppercaseChar() else it }
-                    .joinToString("")
+            val filtered = text.filter { it == '_' || it.isLetterOrDigit() }
+                .map { if (it.isLetter()) it.uppercaseChar() else it }
+                .joinToString("")
 
-                // Validate the resulting key would be valid
-                val currentText = fb.document.getText(0, fb.document.length)
-                val newText = currentText.substring(0, off) + filtered + currentText.substring(off)
-
-                if (newText.isNotBlank()) {
-                    SecurityUtils.validateEnvironmentVariableName(newText)
-                }
-
-                super.insertString(fb, off, filtered, attr)
-            } catch (e: SecurityException) {
-                // Ignore invalid input silently for better UX
-            }
+            super.insertString(fb, off, filtered, attr)
+            scheduleValidation(fb)
         }
 
         override fun replace(fb: FilterBypass, off: Int, len: Int, text: String?, attr: AttributeSet?) {
             text ?: return
-            try {
-                val filtered = text.filter { it == '_' || it.isLetterOrDigit() }
-                    .map { if (it.isLetter()) it.uppercaseChar() else it }
-                    .joinToString("")
+            val filtered = text.filter { it == '_' || it.isLetterOrDigit() }
+                .map { if (it.isLetter()) it.uppercaseChar() else it }
+                .joinToString("")
 
-                // Validate the resulting key would be valid
-                val currentText = fb.document.getText(0, fb.document.length)
-                val newText = currentText.substring(0, off) + filtered + currentText.substring(off + len)
+            super.replace(fb, off, len, filtered, attr)
+            scheduleValidation(fb)
+        }
 
-                if (newText.isNotBlank()) {
-                    SecurityUtils.validateEnvironmentVariableName(newText)
+        private fun scheduleValidation(fb: FilterBypass) {
+            validationTimer?.stop()
+            validationTimer = javax.swing.Timer(300) { // 300ms debounce delay
+                try {
+                    val currentText = fb.document.getText(0, fb.document.length)
+                    if (currentText.isNotBlank()) {
+                        SecurityUtils.validateEnvironmentVariableName(currentText)
+                    }
+                } catch (e: SecurityException) {
+                    // Ignore invalid input silently for better UX
                 }
-
-                super.replace(fb, off, len, filtered, attr)
-            } catch (e: SecurityException) {
-                // Ignore invalid input silently for better UX
+            }.apply { 
+                isRepeats = false
+                start() 
             }
         }
     }
