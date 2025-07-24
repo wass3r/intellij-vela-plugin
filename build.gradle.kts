@@ -155,7 +155,12 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            // recommended() // Uncomment this line to use the recommended IntelliJ Platform versions
+            val productReleases = ProductReleasesValueSource().get()
+            val reducedProductReleases =
+                if (productReleases.size > 2) listOf(productReleases.first(), productReleases.last())
+                else productReleases
+            ides(reducedProductReleases)
         }
     }
 }
