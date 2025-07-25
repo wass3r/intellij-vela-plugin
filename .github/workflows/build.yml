@@ -152,6 +152,7 @@ jobs:
         with:
           use_oidc: true
           files: ${{ github.workspace }}/build/reports/kover/report.xml
+          slug: "wass3r:intellij-vela-plugin"
           verbose: true
           fail_ci_if_error: false
 
