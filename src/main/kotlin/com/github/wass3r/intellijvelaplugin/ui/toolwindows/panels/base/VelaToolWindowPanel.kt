@@ -1,7 +1,10 @@
 package com.github.wass3r.intellijvelaplugin.ui.toolwindows.panels.base
 
+import com.github.wass3r.intellijvelaplugin.model.EnvironmentVariable
 import com.github.wass3r.intellijvelaplugin.notifications.NotificationsHelper
 import com.github.wass3r.intellijvelaplugin.services.VelaCliService
+import com.github.wass3r.intellijvelaplugin.settings.VelaSettings
+import com.github.wass3r.intellijvelaplugin.utils.ConsoleOutputMasker
 import com.github.wass3r.intellijvelaplugin.utils.VelaFileUtils
 import com.intellij.execution.actions.ClearConsoleAction
 import com.intellij.execution.filters.TextConsoleBuilderFactory
@@ -32,6 +35,7 @@ abstract class VelaToolWindowPanel(protected val toolWindow: ToolWindow) : Dispo
     
     protected val project: Project = toolWindow.project
     protected val velaService: VelaCliService = VelaCliService.getInstance(project)
+    protected val settings: VelaSettings = VelaSettings.getInstance(project)
     
     // Console components
     protected val console: ConsoleView = TextConsoleBuilderFactory.getInstance()
@@ -41,6 +45,9 @@ abstract class VelaToolWindowPanel(protected val toolWindow: ToolWindow) : Dispo
     
     // State
     protected var selectedPipelineFile: File? = null
+    
+    // Sensitive data for masking
+    protected var environmentVariablesForMasking: List<EnvironmentVariable> = emptyList()
 
     init {
         setupInitialFile()
@@ -68,7 +75,7 @@ abstract class VelaToolWindowPanel(protected val toolWindow: ToolWindow) : Dispo
     abstract fun getErrorNotificationTitle(): String
 
     /**
-     * Creates a process listener for console output with appropriate notifications.
+     * Creates a process listener for console output with appropriate notifications and sensitive data masking.
      */
     private fun createProcessListener(): ProcessListener {
         return object : ProcessAdapter() {
@@ -78,7 +85,16 @@ abstract class VelaToolWindowPanel(protected val toolWindow: ToolWindow) : Dispo
                     outputType === ProcessOutputType.SYSTEM -> ConsoleViewContentType.SYSTEM_OUTPUT
                     else -> ConsoleViewContentType.NORMAL_OUTPUT
                 }
-                console.print(event.text, contentType)
+                
+                // Mask sensitive information before printing to console
+                val apiToken = settings.velaToken
+                val maskedText = ConsoleOutputMasker.maskSensitiveOutput(
+                    event.text,
+                    apiToken,
+                    environmentVariablesForMasking
+                )
+                
+                console.print(maskedText, contentType)
                 console.requestScrollingToEnd()
             }
 
