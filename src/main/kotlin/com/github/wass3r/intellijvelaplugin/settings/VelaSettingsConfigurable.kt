@@ -95,7 +95,8 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
     private fun loadInitialTokenValue() {
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
-                val token = settings.velaToken
+                // Use dedicated background thread method
+                val token = settings.getVelaTokenForBackground()
                 SwingUtilities.invokeLater {
                     initialToken = token
                     tokenLoadState = TokenLoadState.SUCCESS

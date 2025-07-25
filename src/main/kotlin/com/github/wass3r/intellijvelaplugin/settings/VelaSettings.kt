@@ -22,9 +22,14 @@ class VelaSettings : PersistentStateComponent<VelaSettings> {
     var velaAddress: String = ""
 
     /**
-     * Securely managed Vela API token using password storage
-     * Note: This property should not be accessed directly on the EDT.
-     * Use getVelaTokenSafely() for EDT-safe access.
+     * Securely managed Vela API token using password storage.
+     * 
+     * Direct access to this property is safe when:
+     * - Called from background threads (non-EDT)
+     * - Used for setting values (always safe)
+     * 
+     * For EDT-safe access, use getVelaTokenSafely().
+     * For guaranteed background thread access, use getVelaTokenForBackground().
      */
     var velaToken: String
         get() {
@@ -46,8 +51,12 @@ class VelaSettings : PersistentStateComponent<VelaSettings> {
         }
 
     /**
-     * Get the Vela token safely, returning empty string if called on EDT
-     * to avoid blocking the UI thread.
+     * Get the Vela token safely, with EDT protection.
+     * 
+     * This method returns an empty string if called on the EDT to avoid blocking the UI thread.
+     * Use getVelaTokenForBackground() for guaranteed token retrieval on background threads.
+     * 
+     * @return The token string, or empty string if called on EDT or if no token is configured
      */
     fun getVelaTokenSafely(): String {
         return if (com.intellij.openapi.application.ApplicationManager.getApplication().isDispatchThread) {
@@ -56,6 +65,17 @@ class VelaSettings : PersistentStateComponent<VelaSettings> {
         } else {
             getVelaTokenInternal()
         }
+    }
+
+    /**
+     * Get the Vela token for background thread access.
+     * This method should only be called from background threads as it may perform I/O operations.
+     * 
+     * @return The token string, or empty string if no token is configured
+     * @throws SecurityException if token retrieval fails due to security constraints
+     */
+    fun getVelaTokenForBackground(): String {
+        return getVelaTokenInternal()
     }
 
     private fun getVelaTokenInternal(): String {

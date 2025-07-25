@@ -97,4 +97,81 @@ class VelaSettingsTest : LightPlatformTestCase() {
         assertEquals("CLI path should persist", testCliPath, settings.velaCliPath)
         assertEquals("Server address should persist", testAddress, settings.velaAddress)
     }
+    
+    fun testGetVelaTokenForBackground() {
+        val testToken = "background-test-token-123"
+        
+        // Set token first
+        settings.velaToken = testToken
+        
+        // Test background method
+        val retrievedToken = settings.getVelaTokenForBackground()
+        assertEquals("Background method should retrieve token correctly", testToken, retrievedToken)
+        
+        // Test with empty token
+        settings.velaToken = ""
+        val emptyToken = settings.getVelaTokenForBackground()
+        assertEquals("Background method should handle empty token", "", emptyToken)
+    }
+    
+    fun testGetVelaTokenSafelyOnBackgroundThread() {
+        val testToken = "safe-test-token-456"
+        
+        // Set token first
+        settings.velaToken = testToken
+        
+        // Test safe method on background thread
+        var retrievedToken = ""
+        val latch = java.util.concurrent.CountDownLatch(1)
+        
+        com.intellij.openapi.application.ApplicationManager.getApplication().executeOnPooledThread {
+            retrievedToken = settings.getVelaTokenSafely()
+            latch.countDown()
+        }
+        
+        // Wait for background operation to complete
+        latch.await(5, java.util.concurrent.TimeUnit.SECONDS)
+        assertEquals("Safe method should retrieve token on background thread", testToken, retrievedToken)
+    }
+    
+    fun testTokenAccessConsistency() {
+        val testToken = "consistency-test-789"
+        
+        // Set token
+        settings.velaToken = testToken
+        
+        // Test direct access
+        val directAccess = settings.velaToken
+        
+        // Test background access on a background thread
+        var backgroundAccess = ""
+        var safeAccess = ""
+        val latch = java.util.concurrent.CountDownLatch(1)
+        
+        com.intellij.openapi.application.ApplicationManager.getApplication().executeOnPooledThread {
+            backgroundAccess = settings.getVelaTokenForBackground()
+            safeAccess = settings.getVelaTokenSafely()
+            latch.countDown()
+        }
+        
+        // Wait for background operations to complete
+        latch.await(5, java.util.concurrent.TimeUnit.SECONDS)
+        
+        assertEquals("Direct access should match", testToken, directAccess)
+        assertEquals("Background access should match", testToken, backgroundAccess)
+        assertEquals("Safe access should match", testToken, safeAccess)
+    }
+    
+    fun testGetVelaTokenSafelyOnEDT() {
+        val testToken = "edt-test-token"
+        
+        // Set token first
+        settings.velaToken = testToken
+        
+        // Test safe method on EDT (this test runs on EDT by default)
+        val retrievedToken = settings.getVelaTokenSafely()
+        
+        // Should return empty string when called on EDT
+        assertEquals("Safe method should return empty string on EDT", "", retrievedToken)
+    }
 }
