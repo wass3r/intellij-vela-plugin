@@ -284,12 +284,12 @@ class VelaCliService(private val project: Project) {
                     // Add address and token from settings if they exist
                     if (settings.velaAddress.isNotBlank()) {
                         val validatedAddress = SecurityUtils.validateServerUrl(settings.velaAddress)
-                        add("--addr")
+                        add("--api.addr")
                         add(validatedAddress)
                     }
                     if (settings.velaToken.isNotBlank()) {
                         // Token is validated when retrieved from secure storage
-                        add("--api-token")
+                        add("--api.token")
                         add(settings.velaToken)
                     }
                 })
