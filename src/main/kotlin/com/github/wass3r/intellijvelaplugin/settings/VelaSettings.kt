@@ -23,17 +23,12 @@ class VelaSettings : PersistentStateComponent<VelaSettings> {
 
     /**
      * Securely managed Vela API token using password storage
+     * Note: This property should not be accessed directly on the EDT.
+     * Use getVelaTokenSafely() for EDT-safe access.
      */
     var velaToken: String
         get() {
-            return try {
-                val credentialAttributes = createCredentialAttributes()
-                val credentials = PasswordSafe.instance.get(credentialAttributes)
-                credentials?.getPasswordAsString() ?: ""
-            } catch (e: Exception) {
-                log.warn("Failed to retrieve Vela API token from secure storage: ${e.message}")
-                ""
-            }
+            return getVelaTokenInternal()
         }
         set(value) {
             try {
@@ -49,6 +44,30 @@ class VelaSettings : PersistentStateComponent<VelaSettings> {
                 throw SecurityException("Failed to securely store API token", e)
             }
         }
+
+    /**
+     * Get the Vela token safely, returning empty string if called on EDT
+     * to avoid blocking the UI thread.
+     */
+    fun getVelaTokenSafely(): String {
+        return if (com.intellij.openapi.application.ApplicationManager.getApplication().isDispatchThread) {
+            // Return empty string on EDT to avoid blocking
+            ""
+        } else {
+            getVelaTokenInternal()
+        }
+    }
+
+    private fun getVelaTokenInternal(): String {
+        return try {
+            val credentialAttributes = createCredentialAttributes()
+            val credentials = PasswordSafe.instance.get(credentialAttributes)
+            credentials?.getPasswordAsString() ?: ""
+        } catch (e: Exception) {
+            log.warn("Failed to retrieve Vela API token from secure storage: ${e.message}")
+            ""
+        }
+    }
 
     /**
      * Get validated Vela server address

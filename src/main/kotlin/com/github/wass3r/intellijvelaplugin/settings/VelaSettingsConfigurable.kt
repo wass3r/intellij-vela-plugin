@@ -2,6 +2,7 @@ package com.github.wass3r.intellijvelaplugin.settings
 
 import com.github.wass3r.intellijvelaplugin.services.VelaCliService
 import com.github.wass3r.intellijvelaplugin.utils.SecurityUtils
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
@@ -34,12 +35,18 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
     private lateinit var addressField: Cell<JBTextField>
     private lateinit var tokenField: Cell<JBPasswordField>
     private lateinit var versionLabel: JBLabel
+    
+    // Store the initial token value to check for modifications
+    private var initialToken: String = ""
 
     override fun getId(): String = "com.github.wass3r.intellijvelaplugin.settings.VelaSettingsConfigurable"
 
     override fun createComponent(): JComponent {
         log.debug("Creating VelaSettingsConfigurable component")
         versionLabel = JBLabel("Not checked yet")
+
+        // Load the initial token value on a background thread to avoid EDT blocking
+        loadInitialTokenValue()
 
         return panel {
             group("Vela CLI Configuration") {
@@ -70,14 +77,45 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
                 }
                 row("API Token:") {
                     tokenField = passwordField()
-                        .bindText(settings::velaToken)
                         .comment("API token for Vela authentication (stored securely)")
                         .columns(COLUMNS_LARGE)
+                        .apply {
+                            // Load the initial value once it's available
+                            updateTokenFieldWhenReady()
+                        }
                 }
             }
         }.also {
             scheduleVersionCheck() // Initial version check
         }
+    }
+
+    private fun loadInitialTokenValue() {
+        ApplicationManager.getApplication().executeOnPooledThread {
+            try {
+                val token = settings.velaToken
+                SwingUtilities.invokeLater {
+                    initialToken = token
+                    // Update the field if it's been initialized
+                    if (::tokenField.isInitialized) {
+                        tokenField.component.text = token
+                    }
+                }
+            } catch (e: Exception) {
+                log.warn("Failed to load initial token value", e)
+                SwingUtilities.invokeLater {
+                    initialToken = ""
+                }
+            }
+        }
+    }
+
+    private fun updateTokenFieldWhenReady() {
+        // If we already have the initial token, set it immediately
+        if (initialToken.isNotEmpty()) {
+            tokenField.component.text = initialToken
+        }
+        // Otherwise, it will be set when loadInitialTokenValue completes
     }
 
     private fun scheduleVersionCheck() {
@@ -118,7 +156,7 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
     override fun isModified(): Boolean =
         cliPathField.component.text != settings.velaCliPath ||
                 addressField.component.text != settings.velaAddress ||
-                String(tokenField.component.password) != settings.velaToken
+                String(tokenField.component.password) != initialToken
 
     override fun apply() {
         log.debug("Applying settings changes")
@@ -143,6 +181,9 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
             settings.velaCliPath = newCliPath
             settings.velaAddress = newAddress
             settings.velaToken = newToken
+            
+            // Update our tracking of the initial token value
+            initialToken = newToken
 
             scheduleVersionCheck()
         } catch (e: SecurityException) {
@@ -156,7 +197,9 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
 
     override fun reset() {
         log.debug("Resetting settings to stored values")
-        // Settings are automatically reset via binding
+        // CLI path and address are automatically reset via binding
+        // For the token, we need to reload it
+        loadInitialTokenValue()
         scheduleVersionCheck()
     }
 
