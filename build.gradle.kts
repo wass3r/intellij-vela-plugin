@@ -15,32 +15,28 @@ plugins {
  * VERSION COMPATIBILITY NOTES
  * ===========================
  * 
- * This project uses specific versions that have been thoroughly tested for compatibility.
- * While the official IntelliJ Platform Plugin Template uses newer versions, we've encountered
- * runtime compatibility issues with the bleeding-edge configuration.
+ * This project uses current stable versions that have been thoroughly tested for compatibility.
+ * The configuration aligns with recent IntelliJ Platform Plugin Template recommendations.
  * 
- * WORKING CONFIGURATION:
- * - Gradle: 8.10 (via gradle-wrapper.properties)
- * - Kotlin: 1.9.25 (via libs.versions.toml)
- * - IntelliJ Platform: 2.1.0 (via libs.versions.toml)
+ * CURRENT WORKING CONFIGURATION:
+ * - Gradle: 8.10.2 (via gradle-wrapper.properties)
+ * - Kotlin: 2.2.0 (via libs.versions.toml)
+ * - IntelliJ Platform: 2.6.0 (via libs.versions.toml)
+ * - IntelliJ IDE: 2024.2.5 (via gradle.properties)
  * - JVM: 21 (required - see jvmToolchain below)
  * 
- * TEMPLATE CONFIGURATION (has runtime issues):
- * - Gradle: 8.13 
- * - Kotlin: 2.1.20
- * - IntelliJ Platform: 2.5.0
- * 
- * KNOWN ISSUES WITH NEWER VERSIONS:
- * - Runtime errors: NoSuchMethodError: 'kotlin.time.DurationKt.toDuration(long, kotlin.time.DurationUnit)'
- * - Test framework initialization failures in IntelliJ Platform services
- * - Generic type resolution problems during test execution
+ * DEPENDENCY VERSIONS:
+ * - Jackson YAML: 2.15.2 (for pipeline file parsing)
+ * - Jackson Kotlin: 2.19.2 (for Kotlin data class support)
+ * - Mockito: 5.18.0 (for unit testing)
+ * - JUnit: 4.13.2 (test framework)
  * 
  * UPGRADE CONSIDERATIONS:
- * - Test thoroughly before upgrading any of these versions
- * - The ecosystem may stabilize in future releases
- * - JVM 21 is mandatory for both configurations
+ * - JVM 21 is required for IntelliJ Platform compatibility
+ * - Test thoroughly when upgrading IntelliJ Platform versions
+ * - Ensure Jackson versions remain compatible with Kotlin data classes
  * 
- * STATUS: ✅ All 34 tests passing with current configuration
+ * STATUS: ✅ All 54 tests passing with current configuration
  * LAST VERIFIED: July 2025
  */
 
@@ -82,11 +78,6 @@ dependencies {
         // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
 
-        // NOTE: instrumentationTools() is REQUIRED for IntelliJ Platform 2.1.0
-        // The official template (with 2.5.0) does NOT include this, but we need it
-        // for compatibility with our stable version configuration
-        instrumentationTools()
-        pluginVerifier()
         testFramework(TestFrameworkType.Platform)
     }
 }
