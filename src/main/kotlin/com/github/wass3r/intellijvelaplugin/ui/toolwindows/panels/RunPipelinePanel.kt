@@ -107,6 +107,10 @@ class RunPipelinePanel(toolWindow: ToolWindow) : VelaToolWindowPanel(toolWindow)
         button.addActionListener {
             console.clear()
             val file = selectedPipelineFile ?: pipelineFileInfoPanel.getSelectedFile()
+            
+            // Update environment variables for masking before execution
+            environmentVariablesForMasking = environmentVariables.toList()
+            
             val options = PipelineExecutionOptions(
                 pipelineFile = file,
                 event = eventActionSelector.getCurrentEventAction(),

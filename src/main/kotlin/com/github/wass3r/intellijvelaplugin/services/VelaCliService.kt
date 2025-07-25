@@ -1,7 +1,9 @@
 package com.github.wass3r.intellijvelaplugin.services
 
+import com.github.wass3r.intellijvelaplugin.model.EnvironmentVariable
 import com.github.wass3r.intellijvelaplugin.notifications.NotificationsHelper
 import com.github.wass3r.intellijvelaplugin.settings.VelaSettings
+import com.github.wass3r.intellijvelaplugin.utils.ConsoleOutputMasker
 import com.github.wass3r.intellijvelaplugin.utils.SecurityUtils
 import com.github.wass3r.intellijvelaplugin.utils.VelaFileUtils
 import com.intellij.execution.configurations.GeneralCommandLine
@@ -164,7 +166,7 @@ class VelaCliService(private val project: Project) {
                 }
             }
 
-            runCommandAsync(baseArgs, processListener)
+            runCommandAsync(baseArgs, processListener, options.environmentVariables)
         } catch (e: SecurityException) {
             log.error("Security validation failed during pipeline execution: ${e.message}")
             NotificationsHelper.notifyError(
@@ -234,7 +236,7 @@ class VelaCliService(private val project: Project) {
                 baseArgs.addAll(listOf("--target", sanitizedTarget))
             }
 
-            runCommandAsync(baseArgs, processListener)
+            runCommandAsync(baseArgs, processListener, emptyMap())
         } catch (e: SecurityException) {
             log.error("Security validation failed during pipeline validation: ${e.message}")
             NotificationsHelper.notifyError(
@@ -253,10 +255,22 @@ class VelaCliService(private val project: Project) {
     }
 
     // Helper to run command asynchronously
-    private fun runCommandAsync(args: List<String>, processListener: ProcessListener) {
+    private fun runCommandAsync(args: List<String>, processListener: ProcessListener, envVars: Map<String, String> = emptyMap()) {
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
                 val commandLine = buildCommandLine(args)
+                
+                // Log the command with masked sensitive values for debugging
+                val environmentVariables = envVars.map { (key, value) ->
+                    EnvironmentVariable(enabled = true, key = key, value = value, isSecret = true)
+                }
+                val maskedCommand = ConsoleOutputMasker.maskCommandLine(
+                    listOf(commandLine.exePath) + commandLine.parametersList.parameters,
+                    settings.velaToken,
+                    environmentVariables
+                )
+                log.debug("Executing masked command: ${maskedCommand.joinToString(" ")}")
+                
                 val handler = executeCommand(commandLine)
                 handler.addProcessListener(processListener)
                 handler.startNotify()
