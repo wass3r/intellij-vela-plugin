@@ -36,7 +36,9 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
     private lateinit var tokenField: Cell<JBPasswordField>
     private lateinit var versionLabel: JBLabel
     
-    // Store the initial token value to check for modifications
+    // Track token loading state
+    private enum class TokenLoadState { PENDING, SUCCESS, FAILURE }
+    private var tokenLoadState: TokenLoadState = TokenLoadState.PENDING
     private var initialToken: String = ""
 
     override fun getId(): String = "com.github.wass3r.intellijvelaplugin.settings.VelaSettingsConfigurable"
@@ -96,6 +98,7 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
                 val token = settings.velaToken
                 SwingUtilities.invokeLater {
                     initialToken = token
+                    tokenLoadState = TokenLoadState.SUCCESS
                     // Update the field if it's been initialized
                     if (::tokenField.isInitialized) {
                         tokenField.component.text = token
@@ -105,14 +108,15 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
                 log.warn("Failed to load initial token value", e)
                 SwingUtilities.invokeLater {
                     initialToken = ""
+                    tokenLoadState = TokenLoadState.FAILURE
                 }
             }
         }
     }
 
     private fun updateTokenFieldWhenReady() {
-        // If we already have the initial token, set it immediately
-        if (initialToken.isNotEmpty()) {
+        // If the token has been loaded (either successfully or failed), set it immediately
+        if (tokenLoadState != TokenLoadState.PENDING) {
             tokenField.component.text = initialToken
         }
         // Otherwise, it will be set when loadInitialTokenValue completes
@@ -153,10 +157,19 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
         }, 500, TimeUnit.MILLISECONDS)
     }
 
-    override fun isModified(): Boolean =
-        cliPathField.component.text != settings.velaCliPath ||
-                addressField.component.text != settings.velaAddress ||
-                String(tokenField.component.password) != initialToken
+    override fun isModified(): Boolean {
+        val isCliPathModified = cliPathField.component.text != settings.velaCliPath
+        val isAddressModified = addressField.component.text != settings.velaAddress
+        
+        // Only check token modification if it has been loaded
+        val isTokenModified = if (tokenLoadState == TokenLoadState.PENDING) {
+            false // Don't consider it modified if we haven't loaded the initial value yet
+        } else {
+            String(tokenField.component.password) != initialToken
+        }
+        
+        return isCliPathModified || isAddressModified || isTokenModified
+    }
 
     override fun apply() {
         log.debug("Applying settings changes")
@@ -199,6 +212,7 @@ class VelaSettingsConfigurable(project: Project) : SearchableConfigurable, Confi
         log.debug("Resetting settings to stored values")
         // CLI path and address are automatically reset via binding
         // For the token, we need to reload it
+        tokenLoadState = TokenLoadState.PENDING
         loadInitialTokenValue()
         scheduleVersionCheck()
     }

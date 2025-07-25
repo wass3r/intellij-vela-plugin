@@ -51,7 +51,7 @@ class VelaSettings : PersistentStateComponent<VelaSettings> {
      */
     fun getVelaTokenSafely(): String {
         return if (com.intellij.openapi.application.ApplicationManager.getApplication().isDispatchThread) {
-            // Return empty string on EDT to avoid blocking
+            log.warn("getVelaTokenSafely() was called on the EDT. Returning an empty string to avoid blocking the UI thread.")
             ""
         } else {
             getVelaTokenInternal()
