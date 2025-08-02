@@ -241,29 +241,34 @@ A developer working on a project with Vela CI/CD can execute, validate, and prev
 Following [JetBrains Plugin Testing Guidelines](https://plugins.jetbrains.com/docs/intellij/testing-plugins.html), the testing approach includes:
 
 #### **Unit Testing**
+
 * **Core logic tests**: CLI integration, settings, error handling, and pipeline parsing
 * **Service layer tests**: `VelaCliService`, `PipelineService` with mocked dependencies
 * **Model validation**: Pipeline data structures and environment variable handling
 * **Utility functions**: File detection, path resolution, and security utilities
 
-#### **Integration Testing** 
+#### **Integration Testing**
+
 * **End-to-end flows**: Pipeline execution, validation, preview, and build status retrieval
 * **File system integration**: Pipeline file detection, watching, and auto-refresh
 * **CLI process integration**: Command execution with real/mocked Vela CLI
 * **Settings persistence**: Configuration storage and retrieval
 
 #### **UI Testing**
+
 * **Component tests**: Tool window panels, dialogs, and form interactions using IntelliJ test framework
 * **Action tests**: Menu actions, toolbar buttons, and keyboard shortcuts
 * **Console functionality**: Output display, search capabilities, and user interactions
 * **Settings UI**: Configuration panels and validation behavior
 
 #### **Platform Testing**
+
 * **Light platform tests**: For services and non-UI components using `LightPlatformTestCase`
-* **Heavy platform tests**: For full IDE integration using `HeavyPlatformTestCase` 
+* **Heavy platform tests**: For full IDE integration using `HeavyPlatformTestCase`
 * **Fixture-based tests**: Using `CodeInsightTestFixture` for file-based testing
 
 #### **Mocking Strategy**
+
 * **External dependencies**: Vela CLI process execution and file system operations
 * **IntelliJ services**: Project services and platform APIs for isolated testing
 * **Network calls**: Any future remote API integrations (build status, authentication)
@@ -271,11 +276,13 @@ Following [JetBrains Plugin Testing Guidelines](https://plugins.jetbrains.com/do
 ### 11.2 Test framework integration
 
 #### **IntelliJ Platform Test Framework**
+
 * Leverage `com.intellij.testFramework.*` for platform-specific testing
 * Use `PlatformTestUtil` for test data management and assertions
 * Implement proper test lifecycle with setup/teardown for IDE state
 
 #### **Test Data Organization**
+
 * **Test fixtures**: Sample `.vela.yml` files for various pipeline configurations
 * **Mock responses**: CLI output samples for success/error scenarios  
 * **Configuration files**: Test project structures and settings
@@ -283,28 +290,33 @@ Following [JetBrains Plugin Testing Guidelines](https://plugins.jetbrains.com/do
 ### 11.3 Quality assurance
 
 #### **Automated Testing**
+
 * All user stories must have clear, testable acceptance criteria
 * Automated tests must pass before release (CI/CD integration)
 * Code coverage targets: >80% for core logic, >60% for UI components
 * Performance benchmarks for CLI execution and file parsing
 
 #### **Manual Testing**
+
 * **Cross-platform validation**: Windows, macOS, and Linux compatibility
 * **IDE version compatibility**: Target IntelliJ versions (2024.2+)
 * **Edge case scenarios**: Large pipeline files, network failures, CLI errors
 * **User workflow testing**: Complete user journeys for each persona
 
-#### **Security Testing** 
+#### **Security Testing**
+
 * **Credential handling**: Secure storage and retrieval of authentication tokens
 * **CLI execution**: Sandboxing and validation of user-provided commands
 * **File access**: Proper permissions and path validation
 
 #### **Regression Testing**
+
 * Automated regression suite for each release cycle
 * Compatibility testing with IntelliJ Platform updates
 * Performance regression monitoring for large projects
 
 #### **Documentation Testing**
+
 * Validate all code examples and procedures in user documentation
 * Test installation and setup instructions across platforms
 * Verify troubleshooting guides with real scenarios
@@ -314,7 +326,3 @@ Following [JetBrains Plugin Testing Guidelines](https://plugins.jetbrains.com/do
 * **JetBrains Documentation**: [Testing IntelliJ Platform Plugins](https://plugins.jetbrains.com/docs/intellij/testing-plugins.html)
 * **Test Framework Reference**: [IntelliJ Platform Test Framework](https://plugins.jetbrains.com/docs/intellij/testing-faq.html)
 * **CI/CD Integration**: GitHub Actions for automated testing and validation
-
----
-
-Please review the PRD above. Would you like to proceed with creating GitHub issues for the user stories?
