@@ -339,7 +339,7 @@ class VelaCliService(private val project: Project) {
         val handler = OSProcessHandler(commandLine)
 
         // Set process timeout for security (180 minutes max)
-        handler.addProcessListener(object : com.intellij.execution.process.ProcessAdapter() {
+        handler.addProcessListener(object : ProcessListener {
             override fun startNotified(event: com.intellij.execution.process.ProcessEvent) {
                 // Schedule termination after timeout using ScheduledExecutorService
                 val scheduler = java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
@@ -351,6 +351,14 @@ class VelaCliService(private val project: Project) {
                     scheduler.shutdown()
                 }
                 scheduler.schedule(timeoutTask, 180, TimeUnit.MINUTES)
+            }
+            
+            override fun processTerminated(event: com.intellij.execution.process.ProcessEvent) {
+                // No action needed for timeout handler
+            }
+            
+            override fun onTextAvailable(event: com.intellij.execution.process.ProcessEvent, outputType: com.intellij.openapi.util.Key<*>) {
+                // No action needed for timeout handler
             }
         })
 

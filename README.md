@@ -18,7 +18,7 @@
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
 <!-- Plugin description -->
-# 🔧 Unofficial Vela CI/CD Plugin
+Unofficial Vela CI/CD Plugin - A community-developed integration for Vela pipelines in IntelliJ IDE
 
 **⚠️ UNOFFICIAL & EXPERIMENTAL** - This community-developed plugin integrates [Vela CI/CD](https://go-vela.github.io/docs/) pipelines into your IntelliJ IDE. It is not endorsed or supported by the official Vela project. It is developed primarily with AI assistance, and aims to provide a convenient way to manage and execute Vela pipelines directly from your development environment.
 
