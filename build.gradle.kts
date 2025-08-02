@@ -151,7 +151,11 @@ intellijPlatform {
             val reducedProductReleases =
                 if (productReleases.size > 2) listOf(productReleases.first(), productReleases.last())
                 else productReleases
-            ides(reducedProductReleases)
+
+            reducedProductReleases.forEach { release ->
+                val versionStr = if (release.startsWith("IC-")) release.substring(3) else release
+                create("IC", versionStr)
+            }
         }
     }
 }
