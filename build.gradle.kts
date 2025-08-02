@@ -151,7 +151,10 @@ intellijPlatform {
             val reducedProductReleases =
                 if (productReleases.size > 2) listOf(productReleases.first(), productReleases.last())
                 else productReleases
-            ides(reducedProductReleases)
+
+            reducedProductReleases.forEach { release ->
+                create("IC", release)
+            }
         }
     }
 }
