@@ -8,9 +8,8 @@ import com.github.wass3r.intellijvelaplugin.utils.ConsoleOutputMasker
 import com.github.wass3r.intellijvelaplugin.utils.VelaFileUtils
 import com.intellij.execution.actions.ClearConsoleAction
 import com.intellij.execution.filters.TextConsoleBuilderFactory
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
@@ -78,7 +77,7 @@ abstract class VelaToolWindowPanel(protected val toolWindow: ToolWindow) : Dispo
      * Creates a process listener for console output with appropriate notifications and sensitive data masking.
      */
     private fun createProcessListener(): ProcessListener {
-        return object : ProcessAdapter() {
+        return object : ProcessListener {
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
                 val contentType = when {
                     outputType === ProcessOutputType.STDERR -> ConsoleViewContentType.ERROR_OUTPUT
@@ -96,6 +95,10 @@ abstract class VelaToolWindowPanel(protected val toolWindow: ToolWindow) : Dispo
                 
                 console.print(maskedText, contentType)
                 console.requestScrollingToEnd()
+            }
+
+            override fun startNotified(event: ProcessEvent) {
+                // No default action needed, can be overridden by subclasses if needed
             }
 
             override fun processTerminated(event: ProcessEvent) {

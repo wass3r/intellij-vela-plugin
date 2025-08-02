@@ -82,20 +82,19 @@ object SecurityUtils {
 
         return try {
             val uri = URI(url)
-            val normalizedUrl = URL(uri.toString())
-
+            
             // Only allow HTTP(S) protocols
-            if (normalizedUrl.protocol !in setOf("http", "https")) {
+            if (uri.scheme !in setOf("http", "https")) {
                 throw SecurityException("Only HTTP and HTTPS protocols are allowed")
             }
 
             // Validate host
-            if (normalizedUrl.host.isNullOrBlank()) {
+            if (uri.host.isNullOrBlank()) {
                 throw SecurityException("Invalid host in URL")
             }
 
             // Return normalized URL
-            normalizedUrl.toString()
+            uri.toURL().toString()
         } catch (e: MalformedURLException) {
             throw SecurityException("Malformed URL: $url", e)
         } catch (e: URISyntaxException) {

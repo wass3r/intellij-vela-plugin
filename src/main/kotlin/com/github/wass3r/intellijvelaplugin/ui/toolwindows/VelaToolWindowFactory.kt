@@ -35,7 +35,5 @@ class VelaToolWindowFactory : ToolWindowFactory {
         Disposer.register(validateContent, validatePipelinePanel)
         toolWindow.contentManager.addContent(validateContent)
     }
-
-    override fun shouldBeAvailable(project: Project) = true
 }
 
