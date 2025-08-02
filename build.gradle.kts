@@ -153,7 +153,8 @@ intellijPlatform {
                 else productReleases
 
             reducedProductReleases.forEach { release ->
-                create("IC", release)
+                val versionStr = if (release.startsWith("IC-")) release.substring(3) else release
+                create("IC", versionStr)
             }
         }
     }
