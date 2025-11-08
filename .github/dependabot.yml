@@ -9,8 +9,8 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      # Group patch and minor updates together
-      patch-and-minor:
+      # Group all patch and minor updates together across ecosystems
+      all-patch-and-minor:
         update-types:
           - "minor"
           - "patch"
@@ -20,8 +20,8 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      # Group patch and minor updates together
-      patch-and-minor:
+      # Group all patch and minor updates together across ecosystems
+      all-patch-and-minor:
         update-types:
           - "minor"
           - "patch"
