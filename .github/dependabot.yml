@@ -8,8 +8,20 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      # Group patch and minor updates together
+      patch-and-minor:
+        update-types:
+          - "minor"
+          - "patch"
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      # Group patch and minor updates together
+      patch-and-minor:
+        update-types:
+          - "minor"
+          - "patch"
