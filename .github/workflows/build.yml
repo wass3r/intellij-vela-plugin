@@ -148,7 +148,7 @@ jobs:
 
       # Upload the Kover report to CodeCov
       - name: Upload Code Coverage Report
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           use_oidc: true
           files: ${{ github.workspace }}/build/reports/kover/report.xml
@@ -183,7 +183,7 @@ jobs:
 
       # Run Qodana inspections
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@e5d20b1260e99a93210d46ec8882c83978a09036 # v2025.2.2
+        uses: JetBrains/qodana-action@99ec27a55aaaf5ba2fd7e5816e66231caed7a72a # v2025.2.4
         with:
           cache-default-branch-only: true
 
