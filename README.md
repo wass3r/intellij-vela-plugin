@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This project was just a test and is now archived. Not recommended for use.
+
 # Vela CI/CD Integration (Unofficial)
 
 ![Build](https://github.com/wass3r/intellij-vela-plugin/workflows/Build/badge.svg)
